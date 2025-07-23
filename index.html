@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام بلاغات الدعم الفني الذكي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f4f8;
+        }
+        
+        .chat-message {
+            transition: all 0.3s ease;
+        }
+        
+        .chat-message.user {
+            background-color: #f3e8ff;
+            border-radius: 18px 18px 0 18px;
+        }
+        
+        .chat-message.bot {
+            background-color: #ffffff;
+            border-radius: 18px 18px 18px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .typing-indicator span {
+            animation: blink 1.4s infinite both;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 0.1; }
+            20% { opacity: 1; }
+            100% { opacity: 0.1; }
+        }
+        
+        .quick-reply {
+            transition: all 0.2s ease;
+        }
+        
+        .quick-reply:hover {
+            transform: translateY(-2px);
+        }
+        
+        .system-info {
+            background-color: #f8fafc;
+            border-left: 4px solid #8b5cf6;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <header class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="bg-purple-600 text-white p-3 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                </div>
+                <div class="mr-3">
+                    <h1 class="text-2xl font-bold text-gray-800">نظام بلاغات الدعم الفني الذكي</h1>
+                    <p class="text-gray-600">الشركة المصرية للإتصالات</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm px-4 py-2 flex items-center">
+                <span class="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
+                <span class="mr-2 text-gray-700">متصل الآن</span>
+            </div>
+        </header>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-l from-purple-500 to-purple-700 text-white py-4 px-6">
+                <div class="flex items-center">
+                    <div class="bg-white rounded-full p-2 ml-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">مساعد الدعم الفني</h2>
+                        <p class="text-sm text-purple-100">جاهز لمساعدتك في حل المشكلات</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Info Panel -->
+            <div id="system-info" class="p-4 bg-purple-50 border-b border-purple-100 hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-purple-800">معلومات النظام</h3>
+                        <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+                            <div class="text-gray-600">اسم المستخدم:</div>
+                            <div id="user-name" class="font-medium">أحمد محمد</div>
+                            
+                            <div class="text-gray-600">عنوان IP:</div>
+                            <div id="ip-address" class="font-medium">192.168.1.45</div>
+                            
+                            <div class="text-gray-600">عنوان MAC:</div>
+                            <div id="mac-address" class="font-medium">00:1B:44:11:3A:B7</div>
+                            
+                            <div class="text-gray-600">نظام التشغيل:</div>
+                            <div id="os-version" class="font-medium">Windows 10 Pro</div>
+                            
+                            <div class="text-gray-600">الذاكرة (RAM):</div>
+                            <div id="ram-size" class="font-medium">8 GB</div>
+                        </div>
+                    </div>
+                    <button id="toggle-system-info" class="text-purple-600 hover:text-purple-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="chat-container" class="p-4 h-96 overflow-y-auto">
+                <!-- Chat messages will appear here -->
+            </div>
+            
+            <div id="quick-replies" class="px-4 py-3 bg-gray-50 flex flex-wrap gap-2 border-t border-gray-200">
+                <!-- Quick replies will appear here -->
+            </div>
+            
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex">
+                    <input id="user-input" type="text" placeholder="اكتب رسالتك هنا..." class="flex-1 border border-gray-300 rounded-r-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button id="send-button" class="bg-purple-600 text-white px-6 py-2 rounded-l-lg hover:bg-purple-700 transition duration-200">
+                        <i class="fas fa-paper-plane ml-1"></i> إرسال
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 bg-purple-50 border border-purple-200 rounded-lg p-4 text-purple-800">
+            <div class="flex items-start">
+                <div class="ml-3 text-purple-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold">نظام بلاغات داخلي</h3>
+                    <p class="text-sm">هذا النظام مخصص للاستخدام الداخلي من قبل موظفي الشركة المصرية للإتصالات فقط. يرجى تقديم كافة المعلومات المطلوبة لضمان معالجة البلاغ بشكل سريع.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chat-container');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const quickRepliesContainer = document.getElementById('quick-replies');
+            const systemInfoPanel = document.getElementById('system-info');
+            const toggleSystemInfoBtn = document.getElementById('toggle-system-info');
+            
+            // Simulated user data (in a real scenario, this would come from the domain)
+            const userData = {
+                name: "أحمد محمد علي",
+                email: "ahmed.mohamed@te.eg",
+                employeeId: "TE78945",
+                ipAddress: "192.168.1.45",
+                macAddress: "00:1B:44:11:3A:B7",
+                osVersion: "Windows 10 Pro",
+                ramSize: "8 GB"
+            };
+            
+            // Set user data in the system info panel
+            document.getElementById('user-name').textContent = userData.name;
+            document.getElementById('ip-address').textContent = userData.ipAddress;
+            document.getElementById('mac-address').textContent = userData.macAddress;
+            document.getElementById('os-version').textContent = userData.osVersion;
+            document.getElementById('ram-size').textContent = userData.ramSize;
+            
+            // Show system info panel
+            systemInfoPanel.classList.remove('hidden');
+            
+            // Toggle system info panel
+            toggleSystemInfoBtn.addEventListener('click', function() {
+                if (systemInfoPanel.classList.contains('collapsed')) {
+                    systemInfoPanel.classList.remove('collapsed');
+                    toggleSystemInfoBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>';
+                } else {
+                    systemInfoPanel.classList.add('collapsed');
+                    toggleSystemInfoBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+                }
+            });
+            
+            // Variables to track conversation state
+            let conversationState = {
+                currentIssue: null,
+                otherEmployeeEmail: null,
+                otherEmployeeId: null,
+                otherEmployeeMobile: null,
+                passwordResetType: null,
+                emailLastUsed: null,
+                waitingForManagerEmail: false,
+                waitingForEmployeeEmail: false,
+                waitingForEmployeeId: false,
+                waitingForEmployeeMobile: false,
+                waitingForFullName: false,
+                waitingForMobile: false,
+                reportingForSelf: true,
+                
+                // Computer issue tracking
+                computerIssueType: null,
+                hasDisplayData: null,
+                isLoginScreen: null,
+                isUserLocked: null,
+                checkedPowerCables: null
+            };
+            
+            // Initial bot message
+            setTimeout(() => {
+                addBotMessage(`مرحباً ${userData.name}! أنا مساعد الدعم الفني للشركة المصرية للإتصالات. هل تود الإبلاغ عن مشكلة خاصة بك أم بموظف آخر؟`);
+                showQuickReplies([
+                    "مشكلة خاصة بي",
+                    "مشكلة لموظف آخر"
+                ]);
+            }, 500);
+            
+            // Send message when button is clicked
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Send message when Enter key is pressed
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message) {
+                    addUserMessage(message);
+                    userInput.value = '';
+                    processUserMessage(message);
+                }
+            }
+            
+            function addUserMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message user p-3 mb-4 mr-auto ml-12 text-gray-800';
+                messageElement.innerHTML = `<p>${message}</p>`;
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function addBotMessage(message) {
+                // First add typing indicator
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'chat-message bot p-3 mb-4 ml-auto mr-12 text-gray-800 typing-indicator';
+                typingIndicator.innerHTML = `<p>جاري الكتابة<span>.</span><span>.</span><span>.</span></p>`;
+                chatContainer.appendChild(typingIndicator);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                // After a short delay, replace with actual message
+                setTimeout(() => {
+                    chatContainer.removeChild(typingIndicator);
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'chat-message bot p-3 mb-4 ml-auto mr-12 text-gray-800';
+                    messageElement.innerHTML = `<p>${message}</p>`;
+                    chatContainer.appendChild(messageElement);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 1000);
+            }
+            
+            function showQuickReplies(replies) {
+                quickRepliesContainer.innerHTML = '';
+                
+                // Add quick replies
+                replies.forEach(reply => {
+                    const button = document.createElement('button');
+                    button.className = 'quick-reply bg-white border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:border-purple-300 transition';
+                    button.textContent = reply;
+                    button.addEventListener('click', () => {
+                        addUserMessage(reply);
+                        processUserMessage(reply);
+                    });
+                    quickRepliesContainer.appendChild(button);
+                });
+            }
+            
+            function processUserMessage(message) {
+                message = message.trim();
+                
+                // Clear quick replies
+                quickRepliesContainer.innerHTML = '';
+                
+                // Check if waiting for employee email for another employee
+                if (conversationState.waitingForEmployeeEmail) {
+                    conversationState.waitingForEmployeeEmail = false;
+                    conversationState.waitingForEmployeeId = true;
+                    conversationState.otherEmployeeEmail = message;
+                    conversationState.reportingForSelf = false;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`شكراً لك. الآن يرجى إدخال رقم العامل للموظف:`);
+                        showQuickReplies([]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check if waiting for employee ID for another employee
+                if (conversationState.waitingForEmployeeId) {
+                    conversationState.waitingForEmployeeId = false;
+                    conversationState.waitingForEmployeeMobile = true;
+                    conversationState.otherEmployeeId = message;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`شكراً لك. الآن يرجى إدخال رقم الموبايل للموظف:`);
+                        showQuickReplies([]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check if waiting for employee mobile for another employee
+                if (conversationState.waitingForEmployeeMobile) {
+                    conversationState.waitingForEmployeeMobile = false;
+                    conversationState.otherEmployeeMobile = message;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`شكراً لك. سأساعدك في حل المشكلة المتعلقة بالموظف صاحب البريد الإلكتروني: ${conversationState.otherEmployeeEmail}. ما نوع المشكلة التي يواجهها؟`);
+                        showQuickReplies([
+                            "نسيان كلمة المرور",
+                            "مشكلة في جهاز الكمبيوتر",
+                            "مشكلة في الطابعة",
+                            "مشكلة في الشبكة"
+                        ]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check if waiting for manager email
+                if (conversationState.waitingForManagerEmail) {
+                    conversationState.waitingForManagerEmail = false;
+                    const managerEmail = message;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`تم إرسال طلب الموافقة إلى المدير: ${managerEmail}. سيتم إعلامك عند الحصول على الموافقة وإعادة تفعيل الحساب. هل هناك شيء آخر يمكنني مساعدتك به؟`);
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check if waiting for full name
+                if (conversationState.waitingForFullName) {
+                    conversationState.waitingForFullName = false;
+                    conversationState.waitingForEmployeeId = true;
+                    const fullName = message;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`شكراً ${fullName}. يرجى إدخال رقم الموظف الخاص بك:`);
+                        showQuickReplies([]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check if waiting for employee ID
+                if (conversationState.waitingForEmployeeId) {
+                    conversationState.waitingForEmployeeId = false;
+                    conversationState.waitingForMobile = true;
+                    const employeeId = message;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`شكراً لك. يرجى إدخال رقم الهاتف المحمول المسجل لدينا:`);
+                        showQuickReplies([]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check if waiting for mobile number
+                if (conversationState.waitingForMobile) {
+                    conversationState.waitingForMobile = false;
+                    const mobileNumber = message;
+                    
+                    setTimeout(() => {
+                        addBotMessage(`تم إرسال كلمة المرور الجديدة برسالة نصية إلى الرقم: ${mobileNumber}. يرجى التحقق من هاتفك. هل هناك شيء آخر يمكنني مساعدتك به؟`);
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                    return;
+                }
+                
+                // Process based on message content
+                if (message.includes('مشكلة خاصة بي') || message.includes('مشكلة لي')) {
+                    conversationState.reportingForSelf = true;
+                    setTimeout(() => {
+                        addBotMessage("ما نوع المشكلة التي تواجهها؟");
+                        showQuickReplies([
+                            "نسيان كلمة المرور",
+                            "مشكلة في جهاز الكمبيوتر",
+                            "مشكلة في الطابعة",
+                            "مشكلة في الشبكة"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('مشكلة لموظف آخر') || message.includes('موظف آخر')) {
+                    conversationState.waitingForEmployeeEmail = true;
+                    setTimeout(() => {
+                        addBotMessage("يرجى كتابة البريد الإلكتروني للموظف الذي تواجه المشكلة:");
+                        showQuickReplies([]);
+                    }, 1000);
+                }
+                else if (message.includes('نسيان كلمة المرور') || message.includes('كلمة المرور') || message.includes('باسورد')) {
+                    conversationState.currentIssue = 'password';
+                    setTimeout(() => {
+                        addBotMessage("ما نوع حساب كلمة المرور التي تواجه مشكلة معها؟");
+                        showQuickReplies([
+                            "البريد الإلكتروني (الميل)",
+                            "تطبيق BSS",
+                            "تطبيق OSS",
+                            "تطبيق Matrix"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('البريد الإلكتروني') || message.includes('الميل')) {
+                    conversationState.passwordResetType = 'email';
+                    setTimeout(() => {
+                        addBotMessage("هل مر أكثر من ثلاثة أشهر منذ آخر استخدام للبريد الإلكتروني؟");
+                        showQuickReplies([
+                            "نعم، أكثر من ثلاثة أشهر",
+                            "لا، أقل من ثلاثة أشهر"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، أكثر من ثلاثة أشهر')) {
+                    conversationState.emailLastUsed = 'more_than_three_months';
+                    conversationState.waitingForManagerEmail = true;
+                    setTimeout(() => {
+                        addBotMessage("للأسف، تم إغلاق الحساب بسبب عدم النشاط لأكثر من ثلاثة أشهر. لإعادة تفعيل الحساب، نحتاج إلى موافقة من المدير المباشر. يرجى كتابة البريد الإلكتروني للمدير المباشر:");
+                        showQuickReplies([]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، أقل من ثلاثة أشهر')) {
+                    conversationState.emailLastUsed = 'less_than_three_months';
+                    conversationState.waitingForFullName = true;
+                    setTimeout(() => {
+                        addBotMessage("لإعادة تعيين كلمة المرور، يرجى تقديم المعلومات التالية. أولاً، يرجى كتابة الاسم الرباعي:");
+                        showQuickReplies([]);
+                    }, 1000);
+                }
+                else if (message.includes('تطبيق BSS') || message.includes('BSS')) {
+                    conversationState.passwordResetType = 'bss';
+                    setTimeout(() => {
+                        addBotMessage("لإعادة تعيين كلمة مرور تطبيق BSS، سيتم إرسال طلب إلى فريق الدعم الفني المختص. هل تريد المتابعة؟");
+                        showQuickReplies([
+                            "نعم، أرسل الطلب",
+                            "لا، شكراً"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('تطبيق OSS') || message.includes('OSS')) {
+                    conversationState.passwordResetType = 'oss';
+                    setTimeout(() => {
+                        addBotMessage("لإعادة تعيين كلمة مرور تطبيق OSS، سيتم إرسال طلب إلى فريق الدعم الفني المختص. هل تريد المتابعة؟");
+                        showQuickReplies([
+                            "نعم، أرسل الطلب",
+                            "لا، شكراً"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('تطبيق Matrix') || message.includes('Matrix')) {
+                    conversationState.passwordResetType = 'matrix';
+                    setTimeout(() => {
+                        addBotMessage("لإعادة تعيين كلمة مرور تطبيق Matrix، سيتم إرسال طلب إلى فريق الدعم الفني المختص. هل تريد المتابعة؟");
+                        showQuickReplies([
+                            "نعم، أرسل الطلب",
+                            "لا، شكراً"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، أرسل الطلب')) {
+                    const appType = conversationState.passwordResetType.toUpperCase();
+                    setTimeout(() => {
+                        addBotMessage(`تم إرسال طلب إعادة تعيين كلمة مرور تطبيق ${appType} برقم #RT${Math.floor(10000 + Math.random() * 90000)}. سيتم التواصل معك خلال ساعات العمل. هل هناك شيء آخر يمكنني مساعدتك به؟`);
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('كمبيوتر') || message.includes('جهاز')) {
+                    conversationState.currentIssue = 'computer';
+                    setTimeout(() => {
+                        addBotMessage("هل المشكلة في تشغيل الجهاز؟");
+                        showQuickReplies([
+                            "نعم، مشكلة في تشغيل الجهاز",
+                            "لا، مشكلة أخرى في الجهاز"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، مشكلة في تشغيل الجهاز')) {
+                    conversationState.computerIssueType = 'startup';
+                    setTimeout(() => {
+                        addBotMessage("هل توجد بيانات على الشاشة؟");
+                        showQuickReplies([
+                            "نعم، توجد بيانات على الشاشة",
+                            "لا، الشاشة فارغة"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، الشاشة فارغة')) {
+                    conversationState.hasDisplayData = false;
+                    setTimeout(() => {
+                        addBotMessage("يرجى التأكد من توصيل كابلات الكهرباء بشكل صحيح. هل تم التأكد من ذلك؟");
+                        showQuickReplies([
+                            "نعم، تم التأكد من الكابلات",
+                            "سأقوم بالتحقق الآن"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، تم التأكد من الكابلات')) {
+                    conversationState.checkedPowerCables = true;
+                    setTimeout(() => {
+                        addBotMessage("يبدو أن هناك مشكلة في الجهاز تتطلب فحصاً فنياً. يرجى التوجه بالجهاز إلى قسم الصيانة بالمنطقة. هل تحتاج إلى معلومات إضافية؟");
+                        showQuickReplies([
+                            "نعم، أحتاج معلومات عن موقع قسم الصيانة",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، توجد بيانات على الشاشة')) {
+                    conversationState.hasDisplayData = true;
+                    setTimeout(() => {
+                        addBotMessage("هل المشكلة في شاشة دخول المستخدم (شاشة تسجيل الدخول)؟");
+                        showQuickReplies([
+                            "نعم، مشكلة في شاشة تسجيل الدخول",
+                            "لا، مشكلة أخرى"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، مشكلة في شاشة تسجيل الدخول')) {
+                    conversationState.isLoginScreen = true;
+                    setTimeout(() => {
+                        addBotMessage("هل تأكدت من صحة كلمة المرور أو الباسورد؟");
+                        showQuickReplies([
+                            "نعم، تأكدت من كلمة المرور",
+                            "لا، سأتحقق من كلمة المرور"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، تأكدت من كلمة المرور')) {
+                    setTimeout(() => {
+                        addBotMessage('هل تظهر أمامك رسالة "User name is locked"؟');
+                        showQuickReplies([
+                            "نعم، تظهر هذه الرسالة",
+                            "لا، لا تظهر هذه الرسالة"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، تظهر هذه الرسالة')) {
+                    conversationState.isUserLocked = true;
+                    setTimeout(() => {
+                        addBotMessage("يرجى الانتظار لمدة عشر دقائق ثم إعادة المحاولة. يتم قفل الحساب مؤقتاً بعد عدة محاولات خاطئة لإدخال كلمة المرور. هل تريد المساعدة في أي شيء آخر؟");
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، لا تظهر هذه الرسالة')) {
+                    conversationState.isUserLocked = false;
+                    setTimeout(() => {
+                        addBotMessage("يرجى وصف الرسالة التي تظهر على الشاشة، أو التقاط صورة للشاشة وإرسالها إلى فريق الدعم الفني على البريد الإلكتروني: support@te.eg. هل تريد المساعدة في شيء آخر؟");
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، مشكلة أخرى في الجهاز') || message.includes('لا، مشكلة أخرى')) {
+                    setTimeout(() => {
+                        addBotMessage("ما نوع المشكلة التي تواجهها مع جهاز الكمبيوتر؟");
+                        showQuickReplies([
+                            "بطء في الأداء",
+                            "مشكلة في البرامج",
+                            "مشكلة في الصوت",
+                            "مشكلة أخرى"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('طابعة')) {
+                    conversationState.currentIssue = 'printer';
+                    setTimeout(() => {
+                        addBotMessage("ما نوع المشكلة التي تواجهها مع الطابعة؟");
+                        showQuickReplies([
+                            "الطابعة لا تطبع",
+                            "جودة الطباعة رديئة",
+                            "رسائل خطأ من الطابعة",
+                            "نفاد الحبر أو الورق"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('شبكة')) {
+                    conversationState.currentIssue = 'network';
+                    setTimeout(() => {
+                        addBotMessage("ما نوع مشكلة الشبكة التي تواجهها؟");
+                        showQuickReplies([
+                            "انقطاع الاتصال بالإنترنت",
+                            "بطء في سرعة الإنترنت",
+                            "مشكلة في الوصول إلى موارد الشبكة الداخلية",
+                            "مشكلة في الواي فاي"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، شكراً لك') || message.includes('لا شكرا')) {
+                    setTimeout(() => {
+                        addBotMessage("شكراً لاستخدامك نظام بلاغات الدعم الفني. يمكنك العودة في أي وقت إذا واجهتك أي مشكلة أخرى. مع تمنياتي لك بيوم سعيد!");
+                        setTimeout(() => {
+                            addBotMessage("هل ترغب في بدء محادثة جديدة؟");
+                            showQuickReplies([
+                                "نعم، بدء محادثة جديدة",
+                                "لا، شكراً"
+                            ]);
+                        }, 1500);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، بدء محادثة جديدة')) {
+                    resetConversation();
+                }
+                else if (message.includes('نعم، لدي مشكلة أخرى')) {
+                    setTimeout(() => {
+                        addBotMessage("ما نوع المشكلة التي تواجهها؟");
+                        showQuickReplies([
+                            "نسيان كلمة المرور",
+                            "مشكلة في جهاز الكمبيوتر",
+                            "مشكلة في الطابعة",
+                            "مشكلة في الشبكة"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، أحتاج معلومات عن موقع قسم الصيانة')) {
+                    setTimeout(() => {
+                        addBotMessage("قسم الصيانة موجود في الطابق الثاني، غرفة رقم 205. ساعات العمل من 9 صباحاً حتى 3 عصراً. يرجى إحضار الجهاز مع بطاقة الهوية الخاصة بك. هل هناك شيء آخر يمكنني مساعدتك به؟");
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('سأقوم بالتحقق الآن')) {
+                    setTimeout(() => {
+                        addBotMessage("حسناً، بعد التحقق من الكابلات، يرجى العودة إلينا لإخبارنا بالنتيجة. هل تم حل المشكلة بعد التحقق من الكابلات؟");
+                        showQuickReplies([
+                            "نعم، تم حل المشكلة",
+                            "لا، المشكلة لا تزال موجودة"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، المشكلة لا تزال موجودة')) {
+                    setTimeout(() => {
+                        addBotMessage("يبدو أن هناك مشكلة في الجهاز تتطلب فحصاً فنياً. يرجى التوجه بالجهاز إلى قسم الصيانة بالمنطقة. هل تحتاج إلى معلومات إضافية؟");
+                        showQuickReplies([
+                            "نعم، أحتاج معلومات عن موقع قسم الصيانة",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('نعم، تم حل المشكلة')) {
+                    setTimeout(() => {
+                        addBotMessage("رائع! يسعدنا أننا تمكنا من مساعدتك في حل المشكلة. هل هناك شيء آخر يمكنني مساعدتك به؟");
+                        showQuickReplies([
+                            "نعم، لدي مشكلة أخرى",
+                            "لا، شكراً لك"
+                        ]);
+                    }, 1000);
+                }
+                else if (message.includes('لا، سأتحقق من كلمة المرور')) {
+                    setTimeout(() => {
+                        addBotMessage("حسناً، يرجى التحقق من كلمة المرور والعودة إلينا. إذا كنت قد نسيت كلمة المرور، يمكنني مساعدتك في إعادة تعيينها.");
+                        showQuickReplies([
+                            "نسيت كلمة المرور",
+                            "تم التحقق وما زالت المشكلة موجودة"
+                        ]);
+                    }, 1000);
+                }
+                else {
+                    setTimeout(() => {
+                        addBotMessage("عذراً، لم أفهم طلبك. يرجى اختيار أحد الخيارات التالية أو إعادة صياغة طلبك.");
+                        showQuickReplies([
+                            "نسيان كلمة المرور",
+                            "مشكلة في جهاز الكمبيوتر",
+                            "مشكلة في الطابعة",
+                            "مشكلة في الشبكة"
+                        ]);
+                    }, 1000);
+                }
+            }
+            
+            function resetConversation() {
+                // Reset conversation state
+                conversationState = {
+                    currentIssue: null,
+                    otherEmployeeEmail: null,
+                    otherEmployeeId: null,
+                    otherEmployeeMobile: null,
+                    passwordResetType: null,
+                    emailLastUsed: null,
+                    waitingForManagerEmail: false,
+                    waitingForEmployeeEmail: false,
+                    waitingForEmployeeId: false,
+                    waitingForEmployeeMobile: false,
+                    waitingForFullName: false,
+                    waitingForMobile: false,
+                    reportingForSelf: true,
+                    computerIssueType: null,
+                    hasDisplayData: null,
+                    isLoginScreen: null,
+                    isUserLocked: null,
+                    checkedPowerCables: null
+                };
+                
+                chatContainer.innerHTML = '';
+                addBotMessage(`مرحباً ${userData.name}! أنا مساعد الدعم الفني للشركة المصرية للإتصالات. هل تود الإبلاغ عن مشكلة خاصة بك أم بموظف آخر؟`);
+                showQuickReplies([
+                    "مشكلة خاصة بي",
+                    "مشكلة لموظف آخر"
+                ]);
+            }
+        });
+    </script>
+</body>
+</html>
