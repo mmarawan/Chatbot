@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام بلاغات الدعم الفني الذكي</title>
+    <title>نظام بلاغات الشركة المصرية للإتصالات</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -71,7 +71,7 @@
                     </svg>
                 </div>
                 <div class="mr-3">
-                    <h1 class="text-2xl font-bold text-gray-800">نظام بلاغات الدعم الفني الذكي</h1>
+                    <h1 class="text-2xl font-bold text-gray-800">نظام بلاغات الدعم الفني</h1>
                     <p class="text-gray-600">الشركة المصرية للإتصالات</p>
                 </div>
             </div>
@@ -204,24 +204,14 @@
             let conversationState = {
                 currentIssue: null,
                 otherEmployeeEmail: null,
-                otherEmployeeId: null,
-                otherEmployeeMobile: null,
                 passwordResetType: null,
                 emailLastUsed: null,
                 waitingForManagerEmail: false,
                 waitingForEmployeeEmail: false,
-                waitingForEmployeeId: false,
-                waitingForEmployeeMobile: false,
                 waitingForFullName: false,
+                waitingForEmployeeId: false,
                 waitingForMobile: false,
-                reportingForSelf: true,
-                
-                // Computer issue tracking
-                computerIssueType: null,
-                hasDisplayData: null,
-                isLoginScreen: null,
-                isUserLocked: null,
-                checkedPowerCables: null
+                reportingForSelf: true
             };
             
             // Initial bot message
@@ -281,8 +271,6 @@
             
             function showQuickReplies(replies) {
                 quickRepliesContainer.innerHTML = '';
-                
-                // Add quick replies
                 replies.forEach(reply => {
                     const button = document.createElement('button');
                     button.className = 'quick-reply bg-white border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:border-purple-300 transition';
@@ -304,37 +292,11 @@
                 // Check if waiting for employee email for another employee
                 if (conversationState.waitingForEmployeeEmail) {
                     conversationState.waitingForEmployeeEmail = false;
-                    conversationState.waitingForEmployeeId = true;
                     conversationState.otherEmployeeEmail = message;
                     conversationState.reportingForSelf = false;
                     
                     setTimeout(() => {
-                        addBotMessage(`شكراً لك. الآن يرجى إدخال رقم العامل للموظف:`);
-                        showQuickReplies([]);
-                    }, 1000);
-                    return;
-                }
-                
-                // Check if waiting for employee ID for another employee
-                if (conversationState.waitingForEmployeeId) {
-                    conversationState.waitingForEmployeeId = false;
-                    conversationState.waitingForEmployeeMobile = true;
-                    conversationState.otherEmployeeId = message;
-                    
-                    setTimeout(() => {
-                        addBotMessage(`شكراً لك. الآن يرجى إدخال رقم الموبايل للموظف:`);
-                        showQuickReplies([]);
-                    }, 1000);
-                    return;
-                }
-                
-                // Check if waiting for employee mobile for another employee
-                if (conversationState.waitingForEmployeeMobile) {
-                    conversationState.waitingForEmployeeMobile = false;
-                    conversationState.otherEmployeeMobile = message;
-                    
-                    setTimeout(() => {
-                        addBotMessage(`شكراً لك. سأساعدك في حل المشكلة المتعلقة بالموظف صاحب البريد الإلكتروني: ${conversationState.otherEmployeeEmail}. ما نوع المشكلة التي يواجهها؟`);
+                        addBotMessage(`شكراً لك. سأساعدك في حل المشكلة المتعلقة بالموظف صاحب البريد الإلكتروني: ${message}. ما نوع المشكلة التي تواجهها؟`);
                         showQuickReplies([
                             "نسيان كلمة المرور",
                             "مشكلة في جهاز الكمبيوتر",
@@ -368,7 +330,6 @@
                     
                     setTimeout(() => {
                         addBotMessage(`شكراً ${fullName}. يرجى إدخال رقم الموظف الخاص بك:`);
-                        showQuickReplies([]);
                     }, 1000);
                     return;
                 }
@@ -381,7 +342,6 @@
                     
                     setTimeout(() => {
                         addBotMessage(`شكراً لك. يرجى إدخال رقم الهاتف المحمول المسجل لدينا:`);
-                        showQuickReplies([]);
                     }, 1000);
                     return;
                 }
@@ -418,7 +378,6 @@
                     conversationState.waitingForEmployeeEmail = true;
                     setTimeout(() => {
                         addBotMessage("يرجى كتابة البريد الإلكتروني للموظف الذي تواجه المشكلة:");
-                        showQuickReplies([]);
                     }, 1000);
                 }
                 else if (message.includes('نسيان كلمة المرور') || message.includes('كلمة المرور') || message.includes('باسورد')) {
@@ -448,7 +407,6 @@
                     conversationState.waitingForManagerEmail = true;
                     setTimeout(() => {
                         addBotMessage("للأسف، تم إغلاق الحساب بسبب عدم النشاط لأكثر من ثلاثة أشهر. لإعادة تفعيل الحساب، نحتاج إلى موافقة من المدير المباشر. يرجى كتابة البريد الإلكتروني للمدير المباشر:");
-                        showQuickReplies([]);
                     }, 1000);
                 }
                 else if (message.includes('لا، أقل من ثلاثة أشهر')) {
@@ -456,7 +414,6 @@
                     conversationState.waitingForFullName = true;
                     setTimeout(() => {
                         addBotMessage("لإعادة تعيين كلمة المرور، يرجى تقديم المعلومات التالية. أولاً، يرجى كتابة الاسم الرباعي:");
-                        showQuickReplies([]);
                     }, 1000);
                 }
                 else if (message.includes('تطبيق BSS') || message.includes('BSS')) {
@@ -502,99 +459,11 @@
                 else if (message.includes('كمبيوتر') || message.includes('جهاز')) {
                     conversationState.currentIssue = 'computer';
                     setTimeout(() => {
-                        addBotMessage("هل المشكلة في تشغيل الجهاز؟");
-                        showQuickReplies([
-                            "نعم، مشكلة في تشغيل الجهاز",
-                            "لا، مشكلة أخرى في الجهاز"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، مشكلة في تشغيل الجهاز')) {
-                    conversationState.computerIssueType = 'startup';
-                    setTimeout(() => {
-                        addBotMessage("هل توجد بيانات على الشاشة؟");
-                        showQuickReplies([
-                            "نعم، توجد بيانات على الشاشة",
-                            "لا، الشاشة فارغة"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('لا، الشاشة فارغة')) {
-                    conversationState.hasDisplayData = false;
-                    setTimeout(() => {
-                        addBotMessage("يرجى التأكد من توصيل كابلات الكهرباء بشكل صحيح. هل تم التأكد من ذلك؟");
-                        showQuickReplies([
-                            "نعم، تم التأكد من الكابلات",
-                            "سأقوم بالتحقق الآن"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، تم التأكد من الكابلات')) {
-                    conversationState.checkedPowerCables = true;
-                    setTimeout(() => {
-                        addBotMessage("يبدو أن هناك مشكلة في الجهاز تتطلب فحصاً فنياً. يرجى التوجه بالجهاز إلى قسم الصيانة بالمنطقة. هل تحتاج إلى معلومات إضافية؟");
-                        showQuickReplies([
-                            "نعم، أحتاج معلومات عن موقع قسم الصيانة",
-                            "لا، شكراً لك"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، توجد بيانات على الشاشة')) {
-                    conversationState.hasDisplayData = true;
-                    setTimeout(() => {
-                        addBotMessage("هل المشكلة في شاشة دخول المستخدم (شاشة تسجيل الدخول)؟");
-                        showQuickReplies([
-                            "نعم، مشكلة في شاشة تسجيل الدخول",
-                            "لا، مشكلة أخرى"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، مشكلة في شاشة تسجيل الدخول')) {
-                    conversationState.isLoginScreen = true;
-                    setTimeout(() => {
-                        addBotMessage("هل تأكدت من صحة كلمة المرور أو الباسورد؟");
-                        showQuickReplies([
-                            "نعم، تأكدت من كلمة المرور",
-                            "لا، سأتحقق من كلمة المرور"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، تأكدت من كلمة المرور')) {
-                    setTimeout(() => {
-                        addBotMessage('هل تظهر أمامك رسالة "User name is locked"؟');
-                        showQuickReplies([
-                            "نعم، تظهر هذه الرسالة",
-                            "لا، لا تظهر هذه الرسالة"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، تظهر هذه الرسالة')) {
-                    conversationState.isUserLocked = true;
-                    setTimeout(() => {
-                        addBotMessage("يرجى الانتظار لمدة عشر دقائق ثم إعادة المحاولة. يتم قفل الحساب مؤقتاً بعد عدة محاولات خاطئة لإدخال كلمة المرور. هل تريد المساعدة في أي شيء آخر؟");
-                        showQuickReplies([
-                            "نعم، لدي مشكلة أخرى",
-                            "لا، شكراً لك"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('لا، لا تظهر هذه الرسالة')) {
-                    conversationState.isUserLocked = false;
-                    setTimeout(() => {
-                        addBotMessage("يرجى وصف الرسالة التي تظهر على الشاشة، أو التقاط صورة للشاشة وإرسالها إلى فريق الدعم الفني على البريد الإلكتروني: support@te.eg. هل تريد المساعدة في شيء آخر؟");
-                        showQuickReplies([
-                            "نعم، لدي مشكلة أخرى",
-                            "لا، شكراً لك"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('لا، مشكلة أخرى في الجهاز') || message.includes('لا، مشكلة أخرى')) {
-                    setTimeout(() => {
                         addBotMessage("ما نوع المشكلة التي تواجهها مع جهاز الكمبيوتر؟");
                         showQuickReplies([
-                            "بطء في الأداء",
+                            "مشكلة في تشغيل الجهاز",
                             "مشكلة في البرامج",
-                            "مشكلة في الصوت",
+                            "بطء في الأداء",
                             "مشكلة أخرى"
                         ]);
                     }, 1000);
@@ -636,7 +505,28 @@
                     }, 1000);
                 }
                 else if (message.includes('نعم، بدء محادثة جديدة')) {
-                    resetConversation();
+                    setTimeout(() => {
+                        // Reset conversation state
+                        conversationState = {
+                            currentIssue: null,
+                            otherEmployeeEmail: null,
+                            passwordResetType: null,
+                            emailLastUsed: null,
+                            waitingForManagerEmail: false,
+                            waitingForEmployeeEmail: false,
+                            waitingForFullName: false,
+                            waitingForEmployeeId: false,
+                            waitingForMobile: false,
+                            reportingForSelf: true
+                        };
+                        
+                        chatContainer.innerHTML = '';
+                        addBotMessage(`مرحباً ${userData.name}! أنا مساعد الدعم الفني للشركة المصرية للإتصالات. هل تود الإبلاغ عن مشكلة خاصة بك أم بموظف آخر؟`);
+                        showQuickReplies([
+                            "مشكلة خاصة بي",
+                            "مشكلة لموظف آخر"
+                        ]);
+                    }, 1000);
                 }
                 else if (message.includes('نعم، لدي مشكلة أخرى')) {
                     setTimeout(() => {
@@ -646,51 +536,6 @@
                             "مشكلة في جهاز الكمبيوتر",
                             "مشكلة في الطابعة",
                             "مشكلة في الشبكة"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، أحتاج معلومات عن موقع قسم الصيانة')) {
-                    setTimeout(() => {
-                        addBotMessage("قسم الصيانة موجود في الطابق الثاني، غرفة رقم 205. ساعات العمل من 9 صباحاً حتى 3 عصراً. يرجى إحضار الجهاز مع بطاقة الهوية الخاصة بك. هل هناك شيء آخر يمكنني مساعدتك به؟");
-                        showQuickReplies([
-                            "نعم، لدي مشكلة أخرى",
-                            "لا، شكراً لك"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('سأقوم بالتحقق الآن')) {
-                    setTimeout(() => {
-                        addBotMessage("حسناً، بعد التحقق من الكابلات، يرجى العودة إلينا لإخبارنا بالنتيجة. هل تم حل المشكلة بعد التحقق من الكابلات؟");
-                        showQuickReplies([
-                            "نعم، تم حل المشكلة",
-                            "لا، المشكلة لا تزال موجودة"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('لا، المشكلة لا تزال موجودة')) {
-                    setTimeout(() => {
-                        addBotMessage("يبدو أن هناك مشكلة في الجهاز تتطلب فحصاً فنياً. يرجى التوجه بالجهاز إلى قسم الصيانة بالمنطقة. هل تحتاج إلى معلومات إضافية؟");
-                        showQuickReplies([
-                            "نعم، أحتاج معلومات عن موقع قسم الصيانة",
-                            "لا، شكراً لك"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('نعم، تم حل المشكلة')) {
-                    setTimeout(() => {
-                        addBotMessage("رائع! يسعدنا أننا تمكنا من مساعدتك في حل المشكلة. هل هناك شيء آخر يمكنني مساعدتك به؟");
-                        showQuickReplies([
-                            "نعم، لدي مشكلة أخرى",
-                            "لا، شكراً لك"
-                        ]);
-                    }, 1000);
-                }
-                else if (message.includes('لا، سأتحقق من كلمة المرور')) {
-                    setTimeout(() => {
-                        addBotMessage("حسناً، يرجى التحقق من كلمة المرور والعودة إلينا. إذا كنت قد نسيت كلمة المرور، يمكنني مساعدتك في إعادة تعيينها.");
-                        showQuickReplies([
-                            "نسيت كلمة المرور",
-                            "تم التحقق وما زالت المشكلة موجودة"
                         ]);
                     }, 1000);
                 }
@@ -705,37 +550,6 @@
                         ]);
                     }, 1000);
                 }
-            }
-            
-            function resetConversation() {
-                // Reset conversation state
-                conversationState = {
-                    currentIssue: null,
-                    otherEmployeeEmail: null,
-                    otherEmployeeId: null,
-                    otherEmployeeMobile: null,
-                    passwordResetType: null,
-                    emailLastUsed: null,
-                    waitingForManagerEmail: false,
-                    waitingForEmployeeEmail: false,
-                    waitingForEmployeeId: false,
-                    waitingForEmployeeMobile: false,
-                    waitingForFullName: false,
-                    waitingForMobile: false,
-                    reportingForSelf: true,
-                    computerIssueType: null,
-                    hasDisplayData: null,
-                    isLoginScreen: null,
-                    isUserLocked: null,
-                    checkedPowerCables: null
-                };
-                
-                chatContainer.innerHTML = '';
-                addBotMessage(`مرحباً ${userData.name}! أنا مساعد الدعم الفني للشركة المصرية للإتصالات. هل تود الإبلاغ عن مشكلة خاصة بك أم بموظف آخر؟`);
-                showQuickReplies([
-                    "مشكلة خاصة بي",
-                    "مشكلة لموظف آخر"
-                ]);
             }
         });
     </script>
