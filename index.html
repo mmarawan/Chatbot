@@ -313,11 +313,7 @@
                     const managerEmail = message;
                     
                     setTimeout(() => {
-                        addBotMessage(`تم إرسال طلب الموافقة إلى المدير: ${managerEmail}. سيتم إعلامك عند الحصول على الموافقة وإعادة تفعيل الحساب. هل هناك شيء آخر يمكنني مساعدتك به؟`);
-                        showQuickReplies([
-                            "نعم، لدي مشكلة أخرى",
-                            "لا، شكراً لك"
-                        ]);
+                        addBotMessage(`تم إرسال طلب الموافقة إلى المدير: ${managerEmail}. الرجاء إرسال رقم الهاتف`);
                     }, 1000);
                     return;
                 }
@@ -352,10 +348,10 @@
                     const mobileNumber = message;
                     
                     setTimeout(() => {
-                        addBotMessage(`تم إرسال كلمة المرور الجديدة برسالة نصية إلى الرقم: ${mobileNumber}. يرجى التحقق من هاتفك. هل هناك شيء آخر يمكنني مساعدتك به؟`);
+                        addBotMessage(`سيتم ارسال كلمة المرور الجديدة برسالة نصية إلى الرقم: ${mobileNumber} وذلك بعد التواصل مع فريق الدعم المختص. هل تريد المتابعة؟`);
                         showQuickReplies([
-                            "نعم، لدي مشكلة أخرى",
-                            "لا، شكراً لك"
+                            "نعم، أريد المتابعة",
+                            "لا، شكراً"
                         ]);
                     }, 1000);
                     return;
@@ -446,10 +442,9 @@
                         ]);
                     }, 1000);
                 }
-                else if (message.includes('نعم، أرسل الطلب')) {
-                    const appType = conversationState.passwordResetType.toUpperCase();
+                else if (message.includes('نعم، أرسل الطلب') || message.includes('نعم، أريد المتابعة')) {
                     setTimeout(() => {
-                        addBotMessage(`تم إرسال طلب إعادة تعيين كلمة مرور تطبيق ${appType} برقم #RT${Math.floor(10000 + Math.random() * 90000)}. سيتم التواصل معك خلال ساعات العمل. هل هناك شيء آخر يمكنني مساعدتك به؟`);
+                        addBotMessage("تم تسجيل طلبك بنجاح وسيتم التواصل معك قريباً. هل هناك شيء آخر يمكنني مساعدتك به؟");
                         showQuickReplies([
                             "نعم، لدي مشكلة أخرى",
                             "لا، شكراً لك"
@@ -492,40 +487,17 @@
                         ]);
                     }, 1000);
                 }
-                else if (message.includes('لا، شكراً لك') || message.includes('لا شكرا')) {
+                else if (message.includes('لا، شكراً لك') || message.includes('لا شكرا') || message.includes('لا، شكراً')) {
                     setTimeout(() => {
-                        addBotMessage("شكراً لاستخدامك نظام بلاغات الدعم الفني. يمكنك العودة في أي وقت إذا واجهتك أي مشكلة أخرى. مع تمنياتي لك بيوم سعيد!");
+                        addBotMessage("لا تتردد في التواصل معنا عند الحاجة");
                         setTimeout(() => {
-                            addBotMessage("هل ترغب في بدء محادثة جديدة؟");
-                            showQuickReplies([
-                                "نعم، بدء محادثة جديدة",
-                                "لا، شكراً"
-                            ]);
+                            resetConversation();
                         }, 1500);
                     }, 1000);
                 }
                 else if (message.includes('نعم، بدء محادثة جديدة')) {
                     setTimeout(() => {
-                        // Reset conversation state
-                        conversationState = {
-                            currentIssue: null,
-                            otherEmployeeEmail: null,
-                            passwordResetType: null,
-                            emailLastUsed: null,
-                            waitingForManagerEmail: false,
-                            waitingForEmployeeEmail: false,
-                            waitingForFullName: false,
-                            waitingForEmployeeId: false,
-                            waitingForMobile: false,
-                            reportingForSelf: true
-                        };
-                        
-                        chatContainer.innerHTML = '';
-                        addBotMessage(`مرحباً ${userData.name}! أنا مساعد الدعم الفني للشركة المصرية للإتصالات. هل تود الإبلاغ عن مشكلة خاصة بك أم بموظف آخر؟`);
-                        showQuickReplies([
-                            "مشكلة خاصة بي",
-                            "مشكلة لموظف آخر"
-                        ]);
+                        resetConversation();
                     }, 1000);
                 }
                 else if (message.includes('نعم، لدي مشكلة أخرى')) {
@@ -550,6 +522,29 @@
                         ]);
                     }, 1000);
                 }
+            }
+            
+            function resetConversation() {
+                // Reset conversation state
+                conversationState = {
+                    currentIssue: null,
+                    otherEmployeeEmail: null,
+                    passwordResetType: null,
+                    emailLastUsed: null,
+                    waitingForManagerEmail: false,
+                    waitingForEmployeeEmail: false,
+                    waitingForFullName: false,
+                    waitingForEmployeeId: false,
+                    waitingForMobile: false,
+                    reportingForSelf: true
+                };
+                
+                chatContainer.innerHTML = '';
+                addBotMessage(`مرحباً ${userData.name}! أنا مساعد الدعم الفني للشركة المصرية للإتصالات. هل تود الإبلاغ عن مشكلة خاصة بك أم بموظف آخر؟`);
+                showQuickReplies([
+                    "مشكلة خاصة بي",
+                    "مشكلة لموظف آخر"
+                ]);
             }
         });
     </script>
